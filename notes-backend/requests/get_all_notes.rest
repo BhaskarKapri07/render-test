@@ -32,3 +32,14 @@ Content-Type: application/json
     "important":true,
     "userId":"6465f94856e842337bd953d7"
 }
+
+
+###
+POST http://localhost:3001/api/notes
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImdlblpidWRkaGEiLCJpZCI6IjY0NjVmOTQ4NTZlODQyMzM3YmQ5NTNkNyIsImlhdCI6MTY4NDQwNzg1OH0.vBEXzc3Pj1XAK3zwEtYw9AkLv93TZYBYl3bHrPLytY4
+
+{
+    "content": "Single Page Apps use token authentication",
+    "important": true
+}
