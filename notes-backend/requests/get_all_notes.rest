@@ -21,3 +21,14 @@ Content-Type: application/json
     "content":"Ensure it works with put request",
     "important":true
 }
+
+
+###
+POST http://localhost:3001/api/notes
+Content-Type: application/json
+
+{
+    "content":"User id of the note creator is at the start sent along the request",
+    "important":true,
+    "userId":"6465f94856e842337bd953d7"
+}
