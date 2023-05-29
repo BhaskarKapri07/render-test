@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import Note from './components/Note'
 import Notification from './components/Notification'
 import noteService from './services/notes'
+import loginService from './services/login'
 
 const Footer = () => {
     const footerStyle = {
@@ -27,6 +28,7 @@ const App = () => {
     const [errorMessage, setErrorMessage] = useState(null)
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
+    const [user, setUser] = useState(null)
 
     useEffect(() => {
         noteService.getAll().then((initialNotes) => {
@@ -38,9 +40,23 @@ const App = () => {
         return null
     }
 
-    const handleLogin = (event) => {
+    const handleLogin = async (event) => {
         event.preventDefault()
-        console.log('logging in with ', username, password)
+
+        try {
+            const user = await loginService.login({
+                username,
+                password,
+            })
+            setUser(user)
+            setUsername('')
+            setPassword('')
+        } catch (exception) {
+            setErrorMessage('Wrong Credentials')
+            setTimeout(() => {
+                setErrorMessage(null)
+            }, 500)
+        }
     }
 
     const addNote = (event) => {
@@ -91,7 +107,7 @@ const App = () => {
 
             <form onSubmit={handleLogin}>
                 <div>
-                    username{' '}
+                    username
                     <input
                         type='text'
                         value={username}
@@ -100,7 +116,7 @@ const App = () => {
                     />
                 </div>
                 <div>
-                    password{' '}
+                    password
                     <input
                         type='password'
                         value={password}
