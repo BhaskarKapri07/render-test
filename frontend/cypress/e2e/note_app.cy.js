@@ -1,13 +1,13 @@
 describe('Note ', function () {
     beforeEach(function () {
-        cy.visit('http://localhost:3000')
-        cy.request('POST', 'http://localhost:3001/api/testing/reset')
+        cy.visit('')
+        cy.request('POST', `${Cypress.env('BACKEND')}/testing/reset`)
         const user = {
             name: 'Bhaskar',
             username: 'Bhaskar',
             password: 'Bhaskar',
         }
-        cy.request('POST', 'http://localhost:3001/api/users/', user)
+        cy.request('POST', `${Cypress.env('BACKEND')}/users`, user)
     })
 
     it('front page can be opened', function () {
@@ -28,10 +28,7 @@ describe('Note ', function () {
 
     describe('when logged in', function () {
         beforeEach(function () {
-            cy.contains('log in').click()
-            cy.get('#username').type('Bhaskar')
-            cy.get('#password').type('Bhaskar')
-            cy.get('#login-button').click()
+            cy.login({ username: 'Bhaskar', password: 'Bhaskar' })
         })
 
         it('a new note can be created', function () {
@@ -41,20 +38,42 @@ describe('Note ', function () {
             cy.contains('a note created by cypress')
         })
 
-        describe('and a note exists', function () {
+        describe('and several notes exist', function () {
             beforeEach(function () {
-                cy.contains('new note').click()
-                cy.get('input').type('another note cypress')
-                cy.contains('save').click()
+                cy.createNote({ content: 'first note', important: false })
+                cy.createNote({ content: 'second note', important: false })
+                cy.createNote({ content: 'third note', important: false })
             })
 
-            it('it can be made important', function () {
-                cy.contains('another note cypress')
-                    .contains('make not important')
-                    .click()
-
-                cy.contains('another note cypress').contains('make important')
+            it('one of those can be made important', function () {
+                cy.contains('second note')
+                    .parent()
+                    .find('button')
+                    .as('theButton')
+                cy.get('@theButton').click()
+                cy.get('@theButton').should('contain', 'make not important')
             })
+        })
+    })
+
+    it('login fails with wrong password', function () {
+        cy.contains('log in').click()
+        cy.get('#username').type('Bhaskar')
+        cy.get('#password').type('wrong')
+        cy.get('#login-button').click()
+
+        cy.get('.error')
+            .should('contain', 'wrong credentials')
+            .and('have.css', 'color', 'rgb(255, 0, 0)')
+            .and('have.css', 'border-style', 'solid')
+
+        cy.get('html').should('not.contain', 'Bhaskar logged in')
+    })
+
+    it('then example', function () {
+        cy.get('button').then((buttons) => {
+            console.log('number of buttons', buttons.length)
+            cy.wrap(buttons[0]).click()
         })
     })
 })
